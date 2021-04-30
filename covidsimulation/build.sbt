@@ -26,7 +26,7 @@ version := "1.0"
 // You can define other libraries as dependencies in your build like this:
 
 libraryDependencies += "org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.2"
-
+libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.5.23"
 // Here, `libraryDependencies` is a set of dependencies, and by using `+=`,
 // we're adding the scala-parser-combinators dependency to the set of dependencies
 // that sbt will go and fetch when it starts up.
