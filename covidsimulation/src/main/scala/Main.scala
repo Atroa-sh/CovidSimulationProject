@@ -1,3 +1,6 @@
 object Main extends App {
-  println("Hello, World!")
+  val world = new World(5)
+  world.formFriendships()
+  world.people(1) ! InviteFriends
+  world.shutdown()
 }
