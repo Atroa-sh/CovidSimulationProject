@@ -1,12 +1,22 @@
 import akka.actor._
 
+import scala.collection.mutable.ListBuffer
+import scala.util.Random
 
-class Citizen(val home: Home, val work: Work) extends Actor {
+object AgeRange extends Enumeration {
+  type Age = Value
+  val Underage, Productive, Retired = Value
+}
+
+class Citizen[T <: Building](val home: Home, val age: AgeRange.Value, val work: T) extends Actor {
+  val RNG = new Random()
   var wearsMask: Boolean = false
   var busy: Boolean = false
-  var friends: List[ActorRef] = List()
+  var friends: ListBuffer[ActorRef] = new ListBuffer[ActorRef]()
+  var dead: Boolean = false
 
-  def initializeFriends(friends: List[ActorRef]) = {
+
+  def initializeFriends(friends: ListBuffer[ActorRef]):Unit = {
     this.friends = friends
   }
 
@@ -14,15 +24,20 @@ class Citizen(val home: Home, val work: Work) extends Actor {
 
   }
 
-  def inviteFriend() = {
+  def inviteFriend():Unit = {
     for (i <- friends) i ! FriendInvitation
   }
 
+
   def receive = {
     case CallToWork => goToWork
-    case InviteFriends => if(friends.size<1) println("[" + self.path.name + "]:" + " I dont have any friends FeelsBadMan") else inviteFriend()
+    case InviteFriends => if (friends.size < 1) println("[" + self.path.name + "]:" + " I don't have any friends FeelsBadMan") else inviteFriend()
     case FriendInvitation => println("[" + self.path.name + "]:" + " I got inv from " + "[" + sender.path.name + "]")
-    case SetFriends(friends) => this.friends = friends
+    case SetFriends(friends) => initializeFriends(friends)
+
+    //case SetWork(work) => this.work = work
+    //case GetAge => this.age
+
   }
 }
 
