@@ -9,32 +9,39 @@ class World(numberOfCitizens: Int, numberOfHomes: Int, numberOfSchools: Int, num
   private val homes: List[Home] = List.fill(numberOfHomes)(new Home())
   private val works: List[Work] = List.fill(numberOfWorks)(new Work())
   private val schools: List[School] = List.fill(numberOfSchools)(new School())
-  val unEmploymentRate: Double = 0.035
+  val unemploymentRate: Double = 0.035
   val underageRate: Double = 0.15
   val productiveRate: Double = 0.67 + underageRate
   val retiredRate: Double = 1
   val people: List[ActorRef] = generatePeople()
 
 
-  private def generateAge(): AgeRange.Value = {
-    val roll = RNG.nextDouble()
-    if (roll < underageRate) AgeRange.Underage
-    else if (roll < productiveRate && roll > underageRate) AgeRange.Productive
-    else AgeRange.Retired
-  }
-
-  private def generateWork(age: AgeRange.Value) = age match {
-    case AgeRange.Underage => this.schools(RNG.nextInt(schools.size))
-    case AgeRange.Productive => this.works(RNG.nextInt(works.size))
-  }
+  private def generateWork(age: Int) = 
+    if (age < AgeObject.workAge) this.schools(RNG.nextInt(schools.size))
+    else this.works(RNG.nextInt(works.size))
+  
+  private def isWorking(age: Int): Boolean =
+    if (RNG.nextDouble() < unemploymentRate) false
+    else if (
+      age < AgeObject.schoolAge ||
+      age >= AgeObject.retiredAge
+    ) false
+    else true
 
   private def generatePeople(): List[ActorRef] = {
     val people = new ListBuffer[ActorRef]()
     while (people.size < numberOfCitizens) {
       val home = homes(RNG.nextInt(homes.size))
-      val age = generateAge()
-      val work = if (age == AgeRange.Retired || RNG.nextDouble() < unEmploymentRate) home else generateWork(age)
+      val age = AgeObject.getAge()
+      val work = if (isWorking(age)) generateWork(age) else home
       people += system.actorOf(Props(new Citizen(home, age, work)))
+      println(s"Citizen ${people.size}: age-$age, proffesion-${
+        work match {
+          case Work(_, _) => "Worker"
+          case School(_, _) => "Student"
+          case Home(_, _) => "NaN"
+        }
+      }")
     }
     people.toList
   }

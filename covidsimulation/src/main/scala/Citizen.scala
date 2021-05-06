@@ -8,7 +8,7 @@ object AgeRange extends Enumeration {
   val Underage, Productive, Retired = Value
 }
 
-class Citizen[T <: Building](val home: Home, val age: AgeRange.Value, val work: T) extends Actor {
+class Citizen[T <: Building](val home: Home, val age: Int, val work: T) extends Actor {
   val RNG = new Random()
   var wearsMask: Boolean = false
   var busy: Boolean = false
