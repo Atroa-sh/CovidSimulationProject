@@ -20,3 +20,12 @@ object AgeObject {
         age
     }
 }
+
+object WorldParameters {
+    // Ewentualnie można tez tu wrzucic liczbe budynków, szkół, obywateli itd
+
+    val unemploymentRate: Double = 0.035
+    
+    // Tutaj myślę że będą wszystkie parametry modelu, mam na myśli parametry
+    // służące odpowiedniej kalibracji taie jak np przepływ powietrza
+}

@@ -9,10 +9,6 @@ class World(numberOfCitizens: Int, numberOfHomes: Int, numberOfSchools: Int, num
   private val homes: List[Home] = List.fill(numberOfHomes)(new Home())
   private val works: List[Work] = List.fill(numberOfWorks)(new Work())
   private val schools: List[School] = List.fill(numberOfSchools)(new School())
-  val unemploymentRate: Double = 0.035
-  val underageRate: Double = 0.15
-  val productiveRate: Double = 0.67 + underageRate
-  val retiredRate: Double = 1
   val people: List[ActorRef] = generatePeople()
 
 
@@ -21,7 +17,7 @@ class World(numberOfCitizens: Int, numberOfHomes: Int, numberOfSchools: Int, num
     else this.works(RNG.nextInt(works.size))
   
   private def isWorking(age: Int): Boolean =
-    if (RNG.nextDouble() < unemploymentRate) false
+    if (RNG.nextDouble() < WorldParameters.unemploymentRate) false
     else if (
       age < AgeObject.schoolAge ||
       age >= AgeObject.retiredAge
