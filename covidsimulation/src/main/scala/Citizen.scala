@@ -3,18 +3,46 @@ import akka.actor._
 import scala.collection.mutable.ListBuffer
 import scala.util.Random
 
-object AgeRange extends Enumeration {
-  type Age = Value
-  val Underage, Productive, Retired = Value
+
+object StateSIR extends Enumeration {
+  type StateSIR = Value
+  val Suspectible, Infectious, Recovered = Value
 }
 
-class Citizen[T <: Building](val home: Home, val age: Int, val work: T) extends Actor {
+import StateSIR._
+
+class Citizen[T <: Building](
+  val id: Int, val home: Home, val age: Int, val work: T
+  ) extends Actor with ActorLogging {
+  val proffesion: String = work match {
+    case Work(_, _, _) => "Worker"
+    case School(_, _, _) => "Student"
+    case _ => "NaN"
+  }
   val RNG = new Random()
   var wearsMask: Boolean = false
   var busy: Boolean = false
   var friends: ListBuffer[ActorRef] = new ListBuffer[ActorRef]()
-  var dead: Boolean = false
+  var state: StateSIR = Suspectible
 
+  def receive = {
+    case CallToWork => goToWork
+
+    case SetFriends(friends) => initializeFriends(friends)
+    case InviteFriends => 
+      if (friends.size < 1) log.info(s"\n[$id]: I don't have any friends :(") 
+      else inviteFriends()
+    case FriendInvitation(inviter) => log.info(s"\n[$id]: Recieved invitation from [$inviter]")
+
+    case Infect => state = Infectious
+    case Recover => state = Recovered   // Baaardzo wstępnie
+
+    case Print => println(this)
+
+    //case SetWork(work) => this.work = work
+    //case GetAge => this.age
+
+  }
 
   def initializeFriends(friends: ListBuffer[ActorRef]):Unit = {
     this.friends = friends
@@ -24,20 +52,11 @@ class Citizen[T <: Building](val home: Home, val age: Int, val work: T) extends 
 
   }
 
-  def inviteFriend():Unit = {
-    for (i <- friends) i ! FriendInvitation
+  def inviteFriends(): Unit = {
+    for (i <- friends) i ! FriendInvitation(id)
   }
 
 
-  def receive = {
-    case CallToWork => goToWork
-    case InviteFriends => if (friends.size < 1) println("[" + self.path.name + "]:" + " I don't have any friends FeelsBadMan") else inviteFriend()
-    case FriendInvitation => println("[" + self.path.name + "]:" + " I got inv from " + "[" + sender.path.name + "]")
-    case SetFriends(friends) => initializeFriends(friends)
-
-    //case SetWork(work) => this.work = work
-    //case GetAge => this.age
-
-  }
+  override def toString(): String = s"Citizen $id, age: $age, proffesion: $proffesion"
 }
 

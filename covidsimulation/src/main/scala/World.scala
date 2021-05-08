@@ -6,9 +6,9 @@ import scala.collection.mutable.ListBuffer
 class World(numberOfCitizens: Int, numberOfHomes: Int, numberOfSchools: Int, numberOfWorks: Int) {
   private val system = ActorSystem()
   val RNG = new Random()
-  private val homes: List[Home] = List.fill(numberOfHomes)(new Home())
-  private val works: List[Work] = List.fill(numberOfWorks)(new Work())
-  private val schools: List[School] = List.fill(numberOfSchools)(new School())
+  private val homes: List[Home] = List.tabulate(numberOfHomes)(n => new Home(n + 1))
+  private val works: List[Work] = List.tabulate(numberOfWorks)(n => new Work(n + 1))
+  private val schools: List[School] = List.tabulate(numberOfSchools)(n => new School(n + 1))
   val people: List[ActorRef] = generatePeople()
 
 
@@ -27,17 +27,13 @@ class World(numberOfCitizens: Int, numberOfHomes: Int, numberOfSchools: Int, num
   private def generatePeople(): List[ActorRef] = {
     val people = new ListBuffer[ActorRef]()
     while (people.size < numberOfCitizens) {
+      val id = people.size + 1;
       val home = homes(RNG.nextInt(homes.size))
       val age = AgeObject.getAge()
       val work = if (isWorking(age)) generateWork(age) else home
-      people += system.actorOf(Props(new Citizen(home, age, work)))
-      println(s"Citizen ${people.size}: age-$age, proffesion-${
-        work match {
-          case Work(_, _) => "Worker"
-          case School(_, _) => "Student"
-          case Home(_, _) => "NaN"
-        }
-      }")
+      people += system.actorOf(Props(new Citizen(id, home, age, work)))
+      home.peopleInside += people(id - 1);
+      if (work != home) work.peopleInside += people(id - 1)
     }
     people.toList
   }
@@ -61,6 +57,25 @@ class World(numberOfCitizens: Int, numberOfHomes: Int, numberOfSchools: Int, num
     }
     for (i <- 0 until numberOfCitizens) people(i) ! SetFriends(tmpFriends(i))
   }
+
+  def printWorks(): Unit = {
+    println("==== Works ====")
+    for (w <- works) w.print()
+    println("===============")
+  }
+
+  def printSchools(): Unit = {
+    println("=== Schools ===")
+    for (s <- schools) s.print()
+    println("===============")
+  }
+
+  def printHomes(): Unit = {
+    println("==== Homes ====")
+    for (h <- homes) h.print()
+    println("===============")
+  }
+  
 
   def shutdown(): Unit = system.terminate()
 }
