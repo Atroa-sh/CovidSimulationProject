@@ -8,5 +8,7 @@ object Main extends App {
   // Ze względu na asynchorniczną obsługę wiadomości, czekamy bezpieczną ilość czasu na ich dotarcie
   Thread.sleep(1000)
   world.people(2) ! InviteFriends
+  world.people(2) ! Infect(true)
+  Thread.sleep(1000)
   world.shutdown()
 }

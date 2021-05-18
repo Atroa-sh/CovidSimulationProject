@@ -24,6 +24,7 @@ class Citizen[T <: Building](
   var busy: Boolean = false
   var friends: ListBuffer[ActorRef] = new ListBuffer[ActorRef]()
   var state: StateSIR = Suspectible
+  val infectionRate = 0.5
 
   def receive = {
     case CallToWork => goToWork
@@ -34,7 +35,7 @@ class Citizen[T <: Building](
       else inviteFriends()
     case FriendInvitation(inviter) => log.info(s"\n[$id]: Recieved invitation from [$inviter]")
 
-    case Infect => state = Infectious
+    case Infect(spread) => if (spread) spreadInfection() else reciveInfection()
     case Recover => state = Recovered   // Baaardzo wstępnie
 
     case Print => println(this)
@@ -42,6 +43,19 @@ class Citizen[T <: Building](
     //case SetWork(work) => this.work = work
     //case GetAge => this.age
 
+  }
+
+  def reciveInfection(): Unit = {
+    if (state == Suspectible) {
+      state = Infectious
+      println(s"($id) Got Infected!")
+    }
+  }
+
+  def spreadInfection(): Unit = {
+    work.infect(infectionRate, work.contagionRate)
+    state = Infectious
+    println(s"(Cit. $id) spreading virus in " + work.toString())
   }
 
   def initializeFriends(friends: ListBuffer[ActorRef]):Unit = {

@@ -15,6 +15,6 @@ case class AddFriend(friend: ActorRef)
 
 case object Print
 
-case object Infect
+case class Infect(spread: Boolean)
 case object Recover
 

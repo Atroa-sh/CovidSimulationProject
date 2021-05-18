@@ -6,8 +6,8 @@ import scala.collection.mutable.ListBuffer
 abstract class Building(val id: Int, val contagionRate: Double, val width: Int) {
   val peopleInside: ArrayBuffer[ActorRef] = new ArrayBuffer[ActorRef]()
 
-  def infect(): Unit = {
-    
+  def infect(infectiousProb: Double, instanceProb: Double): Unit = {
+    if (math.random() < infectiousProb * instanceProb) peopleInside.foreach(p => (p ! Infect(false)))
   }
 
   def print(): Unit = {
