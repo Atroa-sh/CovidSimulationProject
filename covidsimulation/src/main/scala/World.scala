@@ -1,6 +1,6 @@
 import scala.util.Random
 import akka.actor._
-
+import Gui._
 import scala.collection.mutable.ListBuffer
 
 class World(numberOfCitizens: Int, numberOfHomes: Int, numberOfSchools: Int, numberOfWorks: Int) {
@@ -32,6 +32,12 @@ class World(numberOfCitizens: Int, numberOfHomes: Int, numberOfSchools: Int, num
       val age = AgeObject.getAge()
       val work = if (isWorking(age)) generateWork(age) else home
       people += system.actorOf(Props(new Citizen(id, home, age, work)))
+      if(isWorking(age)){
+        Gui.addCitizen(id.toString,home.id,work.id)
+      }
+      else{
+        Gui.addCitizen(id.toString,home.id,-1)
+      }
       home.peopleInside += people(id - 1);
       if (work != home) work.peopleInside += people(id - 1)
     }

@@ -1,5 +1,5 @@
 import akka.actor._
-
+import Gui._
 import scala.collection.mutable.ListBuffer
 import scala.util.Random
 
@@ -48,6 +48,7 @@ class Citizen[T <: Building](
   def reciveInfection(): Unit = {
     if (state == Suspectible) {
       state = Infectious
+      Gui.infect(id.toString)
       println(s"($id) Got Infected!")
     }
   }
@@ -71,6 +72,6 @@ class Citizen[T <: Building](
   }
 
 
-  override def toString(): String = s"Citizen $id, age: $age, proffesion: $proffesion"
+  override def toString(): String = s"Citizen $id, age: $age, proffesion: $proffesion id: $id"
 }
 

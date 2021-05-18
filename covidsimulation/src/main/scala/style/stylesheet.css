@@ -1,0 +1,25 @@
+node {
+	fill-mode: plain;   /* Default.          */
+	stroke-mode: plain; /* Default is none.  */
+}
+node.building{
+	shape: box;
+}
+node.citizen{
+	
+}
+node.H{
+	fill-color: orange;
+	
+}
+node.S{
+	fill-color: blue;
+	
+}
+node.W{
+	fill-color: purple;
+	size:30px,30px;
+}
+node.infected{
+	fill-color: red;    /* Default is black. */
+}

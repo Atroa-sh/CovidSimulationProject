@@ -1,0 +1,53 @@
+import org.jgrapht._
+
+import org.jgrapht.graph._
+
+import org.jgrapht.traverse._
+
+import java.io._
+
+import java.net._
+
+import java.util._
+
+
+class MyGraph {
+
+  def run(): Unit = {
+    val stringGraph: Graph[String, DefaultEdge] = createStringGraph()
+    println("-- toString output")
+    println(stringGraph.toString)
+    println()
+  }
+
+
+
+
+  private def createStringGraph(): Graph[String, DefaultEdge] = {
+    val g: Graph[String, DefaultEdge] =
+      new SimpleGraph[String, DefaultEdge](classOf[DefaultEdge])
+    val v1: String = "v1"
+    val v2: String = "v2"
+    val v3: String = "v3"
+    val v4: String = "v4"
+// add the vertices
+    g.addVertex(v1)
+    g.addVertex(v2)
+    g.addVertex(v3)
+    g.addVertex(v4)
+// add edges to create a circuit
+    g.addEdge(v1, v2)
+    g.addEdge(v2, v3)
+    g.addEdge(v3, v4)
+    g.addEdge(v4, v1)
+    g
+  }
+}
+
+object HelloJGraphT {
+  def main() {
+    val graph = new MyGraph
+    graph.run
+  }
+
+}
