@@ -17,7 +17,7 @@ lazy val hello = (project in file("."))
     .settings(
         name := "hello-world",
         libraryDependencies += "org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.2",
-        libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.5.23",
+        libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.5.24",
         libraryDependencies += "org.scala-lang.modules" %% "scala-swing" % "3.0.0",
         libraryDependencies += "org.jgrapht" % "jgrapht-core" % "1.2.0",
         libraryDependencies += "org.graphstream" % "gs-core" % "2.0",
